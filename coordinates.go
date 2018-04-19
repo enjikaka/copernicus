@@ -12,7 +12,8 @@ type Coordinates struct {
 	Lat, Lng float64
 }
 
-func degressToMeters(longitude float64, latitude float64) (float64, float64) {
+// DegreesToMeters : Converts the lat/lng degree pair to WSG84 meters
+func DegreesToMeters(longitude float64, latitude float64) (float64, float64) {
 	x := longitude * 20037508.34 / 180
 	y := math.Log(math.Tan((90+latitude)*math.Pi/360)) / (math.Pi / 180)
 
@@ -35,8 +36,8 @@ func (coords Coordinates) GetBoundsInMeters() (float64, float64, float64, float6
 		log.Fatal(err)
 	}
 
-	xmin, ymin := degressToMeters(codeArea.LngLo, codeArea.LatLo)
-	xmax, ymax := degressToMeters(codeArea.LngHi, codeArea.LatHi)
+	xmin, ymin := DegreesToMeters(codeArea.LngLo, codeArea.LatLo)
+	xmax, ymax := DegreesToMeters(codeArea.LngHi, codeArea.LatHi)
 
 	return xmin, ymin, xmax, ymax
 }
