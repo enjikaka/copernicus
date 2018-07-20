@@ -12,6 +12,14 @@ type Coordinates struct {
 	Lat, Lng float64
 }
 
+type Geometry struct {
+	XMin             float64 `url:"xmin"`
+	YMin             float64 `url:"ymin"`
+	XMax             float64 `url:"xmax"`
+	YMax             float64 `url:"ymax"`
+	SpatialReference int     `url:"spatialReference"`
+}
+
 // DegreesToMeters : Converts the lat/lng degree pair to WSG84 meters
 func DegreesToMeters(longitude float64, latitude float64) (float64, float64) {
 	x := longitude * 20037508.34 / 180
@@ -28,7 +36,7 @@ func (coords Coordinates) GetOpenLocationCode() string {
 }
 
 // GetBoundsInMeters : Get the bounding box in meters of the open location code the coordinates are in
-func (coords Coordinates) GetBoundsInMeters() (float64, float64, float64, float64) {
+func (coords Coordinates) GetBoundsInMeters() Geometry {
 	code := coords.GetOpenLocationCode()
 	codeArea, err := olc.Decode(code)
 
@@ -39,5 +47,5 @@ func (coords Coordinates) GetBoundsInMeters() (float64, float64, float64, float6
 	xmin, ymin := DegreesToMeters(codeArea.LngLo, codeArea.LatLo)
 	xmax, ymax := DegreesToMeters(codeArea.LngHi, codeArea.LatHi)
 
-	return xmin, ymin, xmax, ymax
+	return Geometry{XMin: xmin, YMin: ymin, XMax: xmax, YMax: ymax, SpatialReference: 102100}
 }
