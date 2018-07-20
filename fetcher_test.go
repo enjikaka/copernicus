@@ -4,6 +4,15 @@ import (
 	"testing"
 )
 
+func TestsearchQuery(t *testing.T) {
+	c := Coordinates{58.903839, 6.523730}
+	q := BuildSearchQuery(c)
+
+	if q != "derp" {
+		t.Error("Expected 'derp', got ", q)
+	}
+}
+
 func TestIdentify(t *testing.T) {
 	f := Fetcher{}
 	c := Coordinates{58.903839, 6.523730}

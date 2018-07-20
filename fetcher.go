@@ -2,9 +2,12 @@ package copernicus
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+
+	"github.com/google/go-querystring/query"
 )
 
 type IdentifyResult struct {
@@ -28,9 +31,37 @@ type IdentifyResult struct {
 
 type Fetcher struct{}
 
+type IdentifySearchQuery struct {
+	Geometry       Geometry  `url:"geometry"`
+	GeometryType   string    `url:"geometryType"`
+	Tolerance      int       `url:"tolerance"`
+	MapExtent      []float64 `url:"mapExtent"`
+	ReturnGeometry bool      `url:"returnGeometry"`
+	ImageDisplay   []int     `url:"imageDisplay"`
+	Format         string    `url:"f"`
+}
+
+func BuildSearchQuery(coords Coordinates) string {
+	geometry := coords.GetBoundsInMeters()
+
+	identifySearchQuery := IdentifySearchQuery{
+		Geometry:       geometry,
+		GeometryType:   "esriGeometryEnvelope",
+		Tolerance:      1,
+		MapExtent:      []float64{geometry.XMin, geometry.YMin, geometry.XMax, geometry.YMax},
+		ReturnGeometry: false,
+		ImageDisplay:   []int{10, 10},
+		Format:         "pjson",
+	}
+
+	v, _ := query.Values(identifySearchQuery)
+	return v.Encode()
+}
+
 // Identify : Fetches the land cover information for the coordinate
 func (f Fetcher) Identify(coords Coordinates) (IdentifyResult, error) {
-	url := "https://copernicus.discomap.eea.europa.eu/arcgis/rest/services/Corine/CLC2012_WM/MapServer/identify?geometry=%7B%22xmin%22%3A1197088.0590151804%2C%22ymin%22%3A8381365.272022153%2C%22xmax%22%3A1197101.9739515274%2C%22ymax%22%3A8381393.032636984%2C%22spatialReference%22%3A102100%7D&geometryType=esriGeometryEnvelope&tolerance=1&mapExtent=1197088.0590151804%2C8381365.272022153%2C1197101.9739515274%2C8381393.032636984&returnGeometry=false&imageDisplay=10%2C10&f=pjson"
+	searchQuery := BuildSearchQuery(coords)
+	url := fmt.Sprintf("https://copernicus.discomap.eea.europa.eu/arcgis/rest/services/Corine/CLC2012_WM/MapServer/identify%s", searchQuery)
 
 	spaceClient := http.Client{}
 
