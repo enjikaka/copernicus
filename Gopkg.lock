@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  branch = "master"
+  name = "github.com/google/go-querystring"
+  packages = ["query"]
+  revision = "53e6ce116135b80d037921a7fdd5138cf32d7a8a"
+
+[[projects]]
   name = "github.com/google/open-location-code"
   packages = ["go"]
   revision = "c59f1f3f339c2d89cadfce08b55ec400a454a978"
@@ -10,6 +16,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "92e2dea12d10dd2450b1052b4c956b70e2bebf2687d11aed64741d9b090ef035"
+  inputs-digest = "622e3f57a0e3da4ae3e12ac4ac559654872479673ff45c6dccdd335e314036fe"
   solver-name = "gps-cdcl"
   solver-version = 1
