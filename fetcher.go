@@ -32,7 +32,7 @@ type IdentifyResult struct {
 type Fetcher struct{}
 
 type IdentifySearchQuery struct {
-	Geometry       Geometry  `url:"geometry"`
+	Geometry       string    `url:"geometry"`
 	GeometryType   string    `url:"geometryType"`
 	Tolerance      int       `url:"tolerance"`
 	MapExtent      []float64 `url:"mapExtent"`
@@ -41,11 +41,18 @@ type IdentifySearchQuery struct {
 	Format         string    `url:"f"`
 }
 
+// BuildSearchQuery : Builds search query for the Identify endpoint on the copernicus MapServer
 func BuildSearchQuery(coords Coordinates) string {
 	geometry := coords.GetBoundsInMeters()
 
+	json, err := json.Marshal(geometry)
+	if err != nil {
+		log.Fatal(err)
+	}
+	geometryString := string(json)
+
 	identifySearchQuery := IdentifySearchQuery{
-		Geometry:       geometry,
+		Geometry:       geometryString,
 		GeometryType:   "esriGeometryEnvelope",
 		Tolerance:      1,
 		MapExtent:      []float64{geometry.XMin, geometry.YMin, geometry.XMax, geometry.YMax},
@@ -61,7 +68,7 @@ func BuildSearchQuery(coords Coordinates) string {
 // Identify : Fetches the land cover information for the coordinate
 func (f Fetcher) Identify(coords Coordinates) (IdentifyResult, error) {
 	searchQuery := BuildSearchQuery(coords)
-	url := fmt.Sprintf("https://copernicus.discomap.eea.europa.eu/arcgis/rest/services/Corine/CLC2012_WM/MapServer/identify%s", searchQuery)
+	url := fmt.Sprintf("https://copernicus.discomap.eea.europa.eu/arcgis/rest/services/Corine/CLC2012_WM/MapServer/identify?%s", searchQuery)
 
 	spaceClient := http.Client{}
 

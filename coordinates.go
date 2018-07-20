@@ -13,11 +13,11 @@ type Coordinates struct {
 }
 
 type Geometry struct {
-	XMin             float64 `url:"xmin"`
-	YMin             float64 `url:"ymin"`
-	XMax             float64 `url:"xmax"`
-	YMax             float64 `url:"ymax"`
-	SpatialReference int     `url:"spatialReference"`
+	XMin             float64 `json:"xmin"`
+	YMin             float64 `json:"ymin"`
+	XMax             float64 `json:"xmax"`
+	YMax             float64 `json:"ymax"`
+	SpatialReference int     `json:"spatialReference"`
 }
 
 // DegreesToMeters : Converts the lat/lng degree pair to WSG84 meters
